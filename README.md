@@ -21,7 +21,7 @@ Adding sample books to the library.
 
 Searching for books containing the term "Scott".
 
-Borrowing "The Great Gatsby" and "To Kill a Mockingbird" by a user named "John Doe".
+Borrowing "The River and the Source" and "To Kill a Mockingbird" by a user named "Chris".
 
 Returning "To Kill a Mockingbird".
 
