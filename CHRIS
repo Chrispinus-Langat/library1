@@ -1,0 +1,144 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+class Book {
+private:
+    std::string title;
+    std::string author;
+    bool isAvailable;
+
+public:
+    Book(const std::string& _title, const std::string& _author)
+        : title(_title), author(_author), isAvailable(true) {}
+
+    const std::string& getTitle() const {
+        return title;
+    }
+
+    const std::string& getAuthor() const {
+        return author;
+    }
+
+    bool getAvailability() const {
+        return isAvailable;
+    }
+
+    void setAvailability(bool availability) {
+        isAvailable = availability;
+    }
+};
+
+class User {
+private:
+    std::string name;
+
+public:
+    User(const std::string& _name) : name(_name) {}
+
+    const std::string& getName() const {
+        return name;
+    }
+};
+
+class Library {
+private:
+    std::vector<Book> books;
+    std::vector<User> users;
+
+public:
+    void addBook(const Book& book) {
+        books.push_back(book);
+    }
+
+    void removeBook(const std::string& title) {
+        auto it = std::find_if(books.begin(), books.end(), [title](const Book& book) {
+            return book.getTitle() == title;
+        });
+
+        if (it != books.end()) {
+            books.erase(it);
+        } else {
+            std::cout << "Book not found." << std::endl;
+        }
+    }
+
+    void searchBooks(const std::string& searchTerm) const {
+        bool found = false;
+        std::for_each(books.begin(), books.end(), [searchTerm, &found](const Book& book) {
+            if (book.getTitle().find(searchTerm) != std::string::npos ||
+                book.getAuthor().find(searchTerm) != std::string::npos) {
+                std::cout << "Title: " << book.getTitle() << ", Author: " << book.getAuthor() << ", Availability: " << (book.getAvailability() ? "Available" : "Not available") << std::endl;
+                found = true;
+            }
+        });
+
+        if (!found) {
+            std::cout << "No matching books found." << std::endl;
+        }
+    }
+
+    void borrowBook(const std::string& title, const User& user) {
+        auto it = std::find_if(books.begin(), books.end(), [title](const Book& book) {
+            return book.getTitle() == title;
+        });
+
+        if (it != books.end()) {
+            Book& book = *it;
+            if (book.getAvailability()) {
+                book.setAvailability(false);
+                std::cout << "Book '" << book.getTitle() << "' borrowed by " << user.getName() << std::endl;
+            } else {
+                std::cout << "Book '" << book.getTitle() << "' is not available." << std::endl;
+            }
+        } else {
+            std::cout << "Book not found." << std::endl;
+        }
+    }
+
+    void returnBook(const std::string& title, const User& user) {
+        auto it = std::find_if(books.begin(), books.end(), [title](const Book& book) {
+            return book.getTitle() == title;
+        });
+
+        if (it != books.end()) {
+            Book& book = *it;
+            if (!book.getAvailability()) {
+                book.setAvailability(true);
+                std::cout << "Book '" << book.getTitle() << "' returned by " << user.getName() << std::endl;
+            } else {
+                std::cout << "Book '" << book.getTitle() << "' is already available." << std::endl;
+            }
+        } else {
+            std::cout << "Book not found." << std::endl;
+        }
+    }
+};
+
+int main() {
+    Library library;
+
+    // Adding sample books
+    library.addBook(Book("The River and the source", "Margaret Ogola"));
+    library.addBook(Book("To Kill a Mockingbird", "Harper Lee"));
+    library.addBook(Book("Pride and Prejudice", "Jane Austen"));
+    library.addBook(Book("1984", "George Orwell"));
+
+    // Searching books
+    std::cout << "Searching for books by 'Scott': " << std::endl;
+    library.searchBooks("Scott");
+
+    // Borrowing and returning books
+    User user("	Chris ");
+    library.borrowBook("The River and the source", user);
+    library.borrowBook("To Kill a Mockingbird", user);
+    library.returnBook("To Kill a Mockingbird", user);
+
+    // Searching books after borrowing
+    std::cout << "\nSearching for books by 'Scott' after borrowing: " << std::endl;
+    library.searchBooks("Scott");
+
+    return 0;
+}
+    
